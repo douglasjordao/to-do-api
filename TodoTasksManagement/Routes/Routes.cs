@@ -12,6 +12,20 @@ namespace TodoTasksManagement.Routes
             {
                 return Results.Ok(await repository.GetPaginatedResults(page, pageSize));
             });
+
+            app.MapPost("api/task", async ([FromServices] IRepository repository, [FromBody] TodoTask task) =>
+            {
+                try
+                {
+                    var newTask = await repository.CreateTask(task);
+                    
+                    return Results.Created(string.Concat("tasks/", newTask.Id), newTask);
+                }
+                catch (Utils.ValidationException ex)
+                {
+                    return Results.BadRequest(ex);
+                }
+            });
         }
     }
 }

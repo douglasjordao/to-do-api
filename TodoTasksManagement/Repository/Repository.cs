@@ -31,5 +31,21 @@ namespace TodoTasksManagement.Repository
                 Items = items
             };
         }
+
+        public async Task<TodoTask> CreateTask(TodoTask task)
+        {
+            var newTask = new TodoTask
+            {
+                Name = task.Name,
+                Description = task.Description,
+                Done = false,
+            };
+
+            _context.TodoTasks.Add(newTask);
+
+            await _context.SaveChangesAsync();
+
+            return newTask;
+        }
     }
 }

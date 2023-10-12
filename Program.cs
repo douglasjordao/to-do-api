@@ -1,10 +1,13 @@
 using Database;
 using Microsoft.EntityFrameworkCore;
+using TodoTasksManagement.Repository;
+using TodoTasksManagement.Routes;
 
 var builder = WebApplication.CreateBuilder(args);
 var connString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Add services to the container.
+builder.RegisterTodoTasksReposiroty();
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseMySql(connString, new MySqlServerVersion(new Version(8, 1, 0))));
 builder.Services.AddCors(options =>
@@ -21,6 +24,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.RegisterTodoTasksRoutes();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

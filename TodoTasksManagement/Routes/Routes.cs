@@ -18,12 +18,30 @@ namespace TodoTasksManagement.Routes
                 try
                 {
                     var newTask = await repository.CreateTask(task);
-                    
+
                     return Results.Created(string.Concat("tasks/", newTask.Id), newTask);
                 }
-                catch (Utils.ValidationException ex)
+                catch (Exceptions.ValidationException ex)
                 {
-                    return Results.BadRequest(ex);
+                    return Results.BadRequest(ex.Errors);
+                }
+            });
+
+            app.MapPut("api/task/{id}", async ([FromServices] IRepository repository, [FromBody] TodoTask task, [FromRoute] string id) =>
+            {
+                try
+                {
+                    await repository.UpdateTask(task, id);
+
+                    return Results.NoContent();
+                }
+                catch (Exceptions.RecordNotFoundException)
+                {
+                    return Results.NotFound();
+                }
+                catch (Exceptions.ValidationException ex)
+                {
+                    return Results.BadRequest(ex.Errors);
                 }
             });
         }

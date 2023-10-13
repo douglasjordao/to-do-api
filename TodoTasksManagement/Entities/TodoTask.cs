@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Entities
@@ -21,6 +22,7 @@ namespace Entities
         public string? Name { get; set; }
 
         [MaxLength(100)]
+        [AllowNull]
         public string? Description { get; set; }
 
         [JsonIgnore]
@@ -31,9 +33,9 @@ namespace Entities
             var validationContext = new ValidationContext(this);
             var validationResults = new List<ValidationResult>();
 
-            if (!Validator.TryValidateObject(this, validationContext, validationResults, false))
+            if (!Validator.TryValidateObject(this, validationContext, validationResults, true))
             {
-                throw new Utils.ValidationException(validationResults);
+                throw new Exceptions.ValidationException(validationResults);
             }
         }
     }

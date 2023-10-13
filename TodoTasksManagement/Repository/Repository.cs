@@ -1,5 +1,6 @@
 using Database;
 using Entities;
+using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
@@ -34,6 +35,8 @@ namespace TodoTasksManagement.Repository
 
         public async Task<TodoTask> CreateTask(TodoTask task)
         {
+            task.Validate();
+
             var newTask = new TodoTask
             {
                 Name = task.Name,
@@ -46,6 +49,19 @@ namespace TodoTasksManagement.Repository
             await _context.SaveChangesAsync();
 
             return newTask;
+        }
+
+        public async Task UpdateTask(TodoTask task, string id)
+        {
+            var record = await _context.TodoTasks.FirstOrDefaultAsync(t => t.Id == id) ?? throw new RecordNotFoundException();
+
+            task.Validate();
+
+            record.Name = task.Name;
+            record.Description = task.Description;
+            record.Done = task.Done;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -7,5 +7,6 @@ namespace TodoTasksManagement.Repository
     {
         Task<PaginatedResults<TodoTask>> GetPaginatedResults(int page, int pageSize);
         Task<TodoTask> CreateTask(TodoTask task);
+        Task UpdateTask(TodoTask task, string id);
     }
 }

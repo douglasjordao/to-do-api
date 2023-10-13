@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Utils
+namespace Exceptions
 {
     public class ValidationException : Exception
     {
         public ValidationException()
+        : base()
         {
             Errors = new List<string>();
         }

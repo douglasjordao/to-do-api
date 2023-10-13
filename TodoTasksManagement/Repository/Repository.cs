@@ -28,14 +28,17 @@ namespace TodoTasksManagement.Repository
             var query = _context.TodoTasks.AsQueryable();
 
             var totalItems = await query.CountAsync();
-            var items = await query.Skip(startIndex).Take(pageSize).ToListAsync();
+            var items = await query.OrderBy(t => t.UpdatedAt)
+            .Skip(startIndex)
+            .Take(pageSize)
+            .ToListAsync();
 
             return new PaginatedResults<TodoTask>
             {
                 Page = page,
                 PageSize = pageSize,
                 TotalItems = totalItems,
-                Items = items
+                Items = items,
             };
         }
 
@@ -74,7 +77,7 @@ namespace TodoTasksManagement.Repository
             var record = await GetTaskById(id);
 
             _context.TodoTasks.Remove(record);
-            
+
             await _context.SaveChangesAsync();
         }
     }

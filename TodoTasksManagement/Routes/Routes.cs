@@ -44,6 +44,20 @@ namespace TodoTasksManagement.Routes
                     return Results.BadRequest(ex.Errors);
                 }
             });
+
+            app.MapPatch("api/task/complete/{id}", async ([FromServices] IRepository repository, [FromRoute] string id) =>
+            {
+                try
+                {
+                    await repository.CompleteTask(id);
+
+                    return Results.NoContent();
+                }
+                catch (Exceptions.RecordNotFoundException)
+                {
+                    return Results.NotFound();
+                }
+            });
         }
     }
 }

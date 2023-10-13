@@ -63,5 +63,14 @@ namespace TodoTasksManagement.Repository
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task CompleteTask(string id)
+        {
+            var record = await _context.TodoTasks.FirstOrDefaultAsync(t => t.Id == id) ?? throw new RecordNotFoundException();
+
+            record.Done = true;
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

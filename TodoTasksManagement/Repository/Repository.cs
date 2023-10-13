@@ -3,6 +3,7 @@ using Entities;
 using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using TodoTasksManagement.Dto;
 
 namespace TodoTasksManagement.Repository
 {
@@ -13,6 +14,11 @@ namespace TodoTasksManagement.Repository
         public Repository(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<TodoTask> GetTaskById(string id)
+        {
+            return await _context.TodoTasks.FirstOrDefaultAsync(t => t.Id == id) ?? throw new RecordNotFoundException();
         }
 
         public async Task<PaginatedResults<TodoTask>> GetPaginatedResults(int page, int pageSize)
@@ -33,16 +39,16 @@ namespace TodoTasksManagement.Repository
             };
         }
 
-        public async Task<TodoTask> CreateTask(TodoTask task)
+        public async Task<TodoTask> CreateTask(DtoTodoTask dto)
         {
-            task.Validate();
 
             var newTask = new TodoTask
             {
-                Name = task.Name,
-                Description = task.Description,
-                Done = false,
+                Name = dto.Name,
+                Description = dto.Description,
             };
+
+            newTask.Validate();
 
             _context.TodoTasks.Add(newTask);
 
@@ -51,25 +57,24 @@ namespace TodoTasksManagement.Repository
             return newTask;
         }
 
-        public async Task UpdateTask(TodoTask task, string id)
+        public async Task UpdateTask(DtoTodoTask dto, string id)
         {
-            var record = await _context.TodoTasks.FirstOrDefaultAsync(t => t.Id == id) ?? throw new RecordNotFoundException();
+            var record = await GetTaskById(id);
 
-            task.Validate();
+            record.Name = dto.Name;
+            record.Description = dto.Description;
 
-            record.Name = task.Name;
-            record.Description = task.Description;
-            record.Done = task.Done;
+            record.Validate();
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task CompleteTask(string id)
+        public async Task DeleteTask(string id)
         {
-            var record = await _context.TodoTasks.FirstOrDefaultAsync(t => t.Id == id) ?? throw new RecordNotFoundException();
+            var record = await GetTaskById(id);
 
-            record.Done = true;
-
+            _context.TodoTasks.Remove(record);
+            
             await _context.SaveChangesAsync();
         }
     }

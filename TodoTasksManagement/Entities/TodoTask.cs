@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
 
 namespace Entities
 {
@@ -14,7 +13,6 @@ namespace Entities
 
         [Key]
         [MaxLength(36)]
-        [JsonIgnore]
         public string? Id { get; set; }
 
         [Required]
@@ -24,9 +22,6 @@ namespace Entities
         [MaxLength(100)]
         [AllowNull]
         public string? Description { get; set; }
-
-        [JsonIgnore]
-        public bool Done { get; set; }
 
         public void Validate()
         {

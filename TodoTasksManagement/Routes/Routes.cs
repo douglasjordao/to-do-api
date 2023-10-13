@@ -1,5 +1,6 @@
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using TodoTasksManagement.Dto;
 using TodoTasksManagement.Repository;
 
 namespace TodoTasksManagement.Routes
@@ -8,12 +9,24 @@ namespace TodoTasksManagement.Routes
     {
         public static void RegisterTodoTasksRoutes(this WebApplication app)
         {
+            app.MapGet("api/task/{id}", async ([FromServices] IRepository repository, [FromRoute] string id) =>
+            {
+                try
+                {
+                    return Results.Ok(await repository.GetTaskById(id));
+                }
+                catch (Exceptions.RecordNotFoundException)
+                {
+                    return Results.NotFound();
+                }
+            });
+
             app.MapGet("api/tasks", async ([FromServices] IRepository repository, [FromQuery] int page, [FromQuery] int pageSize) =>
             {
                 return Results.Ok(await repository.GetPaginatedResults(page, pageSize));
             });
 
-            app.MapPost("api/task", async ([FromServices] IRepository repository, [FromBody] TodoTask task) =>
+            app.MapPost("api/task", async ([FromServices] IRepository repository, [FromBody] DtoTodoTask task) =>
             {
                 try
                 {
@@ -27,7 +40,7 @@ namespace TodoTasksManagement.Routes
                 }
             });
 
-            app.MapPut("api/task/{id}", async ([FromServices] IRepository repository, [FromBody] TodoTask task, [FromRoute] string id) =>
+            app.MapPut("api/task/{id}", async ([FromServices] IRepository repository, [FromBody] DtoTodoTask task, [FromRoute] string id) =>
             {
                 try
                 {
@@ -45,11 +58,11 @@ namespace TodoTasksManagement.Routes
                 }
             });
 
-            app.MapPatch("api/task/complete/{id}", async ([FromServices] IRepository repository, [FromRoute] string id) =>
+            app.MapDelete("api/task/{id}", async ([FromServices] IRepository repository, [FromRoute] string id) =>
             {
                 try
                 {
-                    await repository.CompleteTask(id);
+                    await repository.DeleteTask(id);
 
                     return Results.NoContent();
                 }

@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using TodoTasksManagement.Entities;
 
 namespace Entities
 {
     [Serializable]
-    public class TodoTask
+    public class TodoTask : BaseEntity
     {
         public TodoTask()
         {
